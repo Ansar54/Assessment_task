@@ -12,7 +12,7 @@ Assessment_task/
 ├── Task_01/
 │   ├── ebpf.py         # Python program to trace syscalls using eBPF
 │   ├── test.c          # C program that triggers syscalls for testing
-│   └── example.py      # (Optional) Another example of BPF program
+│        
 └── Task_02/
     └── linked_list.c   # C program implementing a doubly linked list
 ```
