@@ -26,6 +26,7 @@ int trace_sys_open(struct pt_regs *ctx, const char __user *filename) {
         (*count)++;
         bpf_trace_printk("Open syscall invoked by process: %s\\n", comm);
         bpf_trace_printk("Opening file: %s\\n", filename);
+        bpf_trace_printk("Process ID: %d\\n", bpf_get_current_pid_tgid() >> 32);
     }
     return 0;
 }
@@ -37,19 +38,18 @@ int trace_sys_write(struct pt_regs *ctx, const char __user *buf, size_t count) {
     // Compare the current process name with the target name passed from Python
     if (strncmp(comm, "$process_name", strlen("$process_name")) == 0) {
         bpf_trace_printk("Write syscall invoked by process: %s\\n", comm);
+        bpf_trace_printk("Process ID: %d\\n", bpf_get_current_pid_tgid() >> 32);
     }
     return 0;
 }
 """)
 
-def log_to_file(message, log_file="syscalls.log"):
-    with open(log_file, "a") as f:
-        f.write(message)
-
 def main(target_process_name, max_logs=10):
     # Initialize BPF with safe formatting
     bpf_text = bpf_program.substitute(process_name=target_process_name)
-    print("BPF Code:\n", bpf_text)  # Print the BPF code for debugging
+
+    # Print the BPF code for debugging
+    print("BPF Code:\n", bpf_text)
 
     try:
         b = BPF(text=bpf_text)
@@ -71,20 +71,17 @@ def main(target_process_name, max_logs=10):
 
     print(f"Tracing syscalls for process: {target_process_name} (up to {max_logs} logs)... Press Ctrl+C to stop.")
 
-    # Set up to collect logs
     log_count = 0
 
     try:
-        # Collect logs
         while log_count < max_logs:
-            time.sleep(1)  # Sleep to avoid busy waiting
-            b.trace_print()  # Print the trace logs to stdout
+            # This will wait for events and print them
+            print("Waiting for events...")
+            b.trace_print()
 
-            # Log to the file
-            log_to_file(f"System call entry logged for process: {target_process_name}\n")  # Adjust this message as needed
-
-            # Increment log count when a log is received
+            # Check if any trace has occurred and increment the log count accordingly
             log_count += 1
+            time.sleep(1)  # Sleep to avoid busy waiting
 
     except KeyboardInterrupt:
         print("\nStopping tracing...")
@@ -92,6 +89,7 @@ def main(target_process_name, max_logs=10):
     # Cleanup
     b.detach_kprobe(event="__x64_sys_open")
     b.detach_kprobe(event="__x64_sys_write")
+    print(f"Stopped tracing syscalls for process: {target_process_name}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
