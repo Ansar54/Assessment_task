@@ -2,22 +2,26 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Structure to hold student data
 struct studentdata {
     int id;
     char name[30];
 };
 
+// Node structure for the doubly linked list
 typedef struct item {
     struct studentdata a;
     struct item* next;
     struct item* prev;
 } item;
 
+// Doubly linked list structure
 typedef struct dlink {
     item* head;
     item* tail;
 } dlink;
 
+// Function to insert a new node at the head of the list
 void insertathead(dlink* list, int id, const char* name) {
     item* new_item = (item*)malloc(sizeof(item));
     if (!new_item) {
@@ -40,6 +44,7 @@ void insertathead(dlink* list, int id, const char* name) {
     }
 }
 
+// Function to display the list
 void disp(dlink* list) {
     item* curr = list->head;
     printf("\nThe items from the list are:\n");
@@ -49,9 +54,10 @@ void disp(dlink* list) {
     }
 }
 
+// Function to remove a specific node by ID
 void removespecific(dlink* list, int id) {
     item* curr = list->head;
-    int flag = 0;
+    int found = 0;
 
     while (curr != NULL) {
         if (curr->a.id == id) {
@@ -71,17 +77,18 @@ void removespecific(dlink* list, int id) {
             }
             free(curr);
             printf("\nItem %d removed from the list\n", id);
-            flag = 1;
+            found = 1;
             break;
         }
         curr = curr->next;
     }
 
-    if (!flag) {
+    if (!found) {
         printf("\nItem %d not found in the list\n", id);
     }
 }
 
+// Function to sort the list using bubble sort
 void bubblesort(dlink* list) {
     int swapped;
     item* ptr1;
@@ -115,6 +122,7 @@ void bubblesort(dlink* list) {
     } while (swapped);
 }
 
+// Main function
 int main() {
     dlink list;
     list.head = NULL;
