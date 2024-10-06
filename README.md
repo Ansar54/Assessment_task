@@ -1,7 +1,9 @@
 
 # Assessment Task
 
-This repository contains two tasks that demonstrate the use of eBPF in Python for system call monitoring and a doubly linked list implementation in C. These tasks showcase system-level programming with eBPF and fundamental data structures in C.
+This repository contains two tasks demonstrating system-level programming using **eBPF** in Python for system call monitoring and a **doubly linked list** implementation in C. Both tasks aim to showcase practical skills in working with low-level systems and data structures.
+
+---
 
 ## Directory Structure
 
@@ -10,7 +12,7 @@ Assessment_task/
 ├── Task_01/
 │   ├── ebpf.py         # Python program to trace syscalls using eBPF
 │   ├── test.c          # C program that triggers syscalls for testing
-│   ├── example.py      # Another example BPF program (if any)
+│   └── example.py      # (Optional) Another example of BPF program
 └── Task_02/
     └── linked_list.c   # C program implementing a doubly linked list
 ```
@@ -19,83 +21,98 @@ Assessment_task/
 
 ## Task 1: eBPF Program to Monitor System Calls
 
-This task involves creating an eBPF program that monitors and logs system calls made by a process whose name is provided as a command-line argument. It was implemented using **BCC** in Python.
+This task involves creating an **eBPF** program that monitors and logs system calls made by a process whose name is passed as a command-line argument. The program is built using **BCC** (BPF Compiler Collection) in Python and captures the `open` and `write` syscalls for the target process.
+
+### Key Features
+
+- Dynamically monitors system calls (`open` and `write`) for any process based on the process name.
+- Flexible for monitoring multiple processes.
+- Real-time logging of syscalls, including details like file access and process IDs.
 
 ### Steps to Execute
 
-1. **Install required dependencies**:
-   - Install BCC (BPF Compiler Collection):
+1. **Install Dependencies**:
+   - Install BCC and necessary kernel headers:
      ```bash
      sudo apt-get install bpfcc-tools linux-headers-$(uname -r) bpfcc-dev
      pip3 install bcc
      ```
 
-2. **Compile and run the C test program**:
-   - Navigate to the `ebpf_program/` directory and compile `test.c`:
+2. **Compile and Run Test Program**:
+   - Navigate to `Task_01/` directory and compile `test.c`:
      ```bash
      gcc -o test test.c
-     ./test <your_name>
+     ./test <process_name>
      ```
 
-3. **Run the Python eBPF program**:
-   - Ensure the `main.py` program is executable:
+3. **Run the Python eBPF Program**:
+   - Execute the Python script, providing the target process name:
      ```bash
-     sudo python3 main.py <your_name>
+     sudo python3 ebpf.py <process_name>
      ```
 
-4. **Output**: The program logs `open` and `write` syscalls made by processes containing your name.
+4. **Output**:
+   - The program will log system calls like:
+     ```bash
+     Open syscall invoked by process: <process_name>
+     Opening file: <filename>
+     Process ID: <PID>
+     ```
 
 ### Libraries/Resources Used
 
-- **BCC (BPF Compiler Collection)**: The core library used to write and run eBPF programs.
-- **Python**: Used to orchestrate the BPF program.
-- **C Standard Library**: For the C program that triggers system calls.
+- **BCC**: Core library for eBPF programs.
+- **Python**: Used to manage and attach probes for syscall tracing.
+- **C Standard Library**: Used to simulate syscalls in the test program.
 
 ### Challenges Encountered
 
-- **Installing build tools for BCC**: I tried multiple environments, including **WSL**, **VMware**, and **dual boot** setups, to get the necessary build tools for BCC running properly. Each environment had its own issues with dependencies and kernel version compatibility.
-- **Attaching kprobes**: Attaching the probes to the correct system calls like `__x64_sys_open` and `__x64_sys_write` was tricky due to variations in system call names across different kernel versions.
-- **Real-time event tracing**: Managing the `b.trace_print()` loop to capture and display syscalls correctly required adjusting sleep times and loop conditions.
-
-### Additional Features
-
-- The eBPF program tracks system calls for any process based on a provided name, making it flexible for monitoring different processes.
+- **Installing BCC**: Various environments (WSL, VMware, dual boot) presented unique challenges in setting up the required kernel dependencies and build tools.
+- **Kernel Compatibility**: Different Linux kernel versions have varying syscall names, which required careful probe attachment.
+- **Real-time Event Handling**: Managing real-time system event streams and ensuring efficient log collection.
 
 ---
 
 ## Task 2: Doubly Linked List Implementation in C
 
-This task involves implementing a **doubly linked list** in C, where each node stores a user-provided name and a unique identifier (ID). The list supports insertion, deletion, and sorting operations.
+This task involves implementing a **doubly linked list** in C, where each node stores a student's **name** and **ID**. The program supports essential operations like **insertion**, **deletion**, and **sorting** of nodes based on the student ID.
+
+### Key Features
+
+- Insertion at the head of the list.
+- Display of the list in order.
+- Deletion of nodes by student ID.
+- Sorting the list by student ID using **bubble sort**.
 
 ### Steps to Execute
 
-1. **Compile and run the linked list program**:
-   - Navigate to the `Task_02/` directory and compile `linked_list.c`:
+1. **Compile and Run the Linked List Program**:
+   - Navigate to `Task_02/` directory and compile the `linked_list.c` file:
      ```bash
      gcc -o linked_list linked_list.c
      ./linked_list
      ```
 
-2. **Input your name**: The program will prompt for your name and perform the operations based on the ID provided.
+2. **Input Data**:
+   - The program prompts the user to input student details (name and ID) and performs operations like insertion, sorting, and deletion.
+
+3. **Output**:
+   - Displays the list before and after sorting, and after removing a specified node by ID.
 
 ### Libraries/Resources Used
 
-- **C Standard Library**: Used for file handling, memory management, and standard I/O operations.
+- **C Standard Library**: Utilized for file handling, dynamic memory allocation, and I/O operations.
 
 ### Challenges Encountered
 
-- **Memory management**: Handling dynamic memory allocation and deallocation to avoid memory leaks.
-- **Sorting**: Implementing the sorting operation efficiently using doubly linked pointers.
-
-### Additional Features
-
-- **Sorting functionality**: The list can be sorted based on the unique identifier, demonstrating flexibility in list manipulation.
+- **Memory Management**: Ensuring proper memory allocation and deallocation to avoid memory leaks.
+- **Sorting**: Implementing bubble sort for the doubly linked list, ensuring data consistency while swapping node data.
 
 ---
 
 ## Conclusion
 
-This project demonstrates both system-level monitoring using eBPF and a basic data structure implementation in C. The eBPF program is a powerful tool for process monitoring, while the linked list showcases fundamental operations in data structures.
+This project demonstrates a blend of system-level programming and fundamental data structure implementation. The **eBPF** task highlights efficient syscall monitoring, crucial for low-level debugging and tracing. Meanwhile, the **doubly linked list** task illustrates core data structure operations that are essential in various computing problems.
 
---- 
+---
 
