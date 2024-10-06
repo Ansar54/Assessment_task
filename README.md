@@ -10,8 +10,8 @@ This repository contains two tasks that demonstrate the use of eBPF in Python fo
 
 ```bash
 Assessment_task/
-├── ebpf_program/
-│   ├── main.py         # Python program to trace syscalls using eBPF
+├── Task_01/
+│   ├── ebpf.py         # Python program to trace syscalls using eBPF
 │   ├── test.c          # C program that triggers syscalls for testing
 │   ├── example.py      # Another example BPF program (if any)
 └── Task_02/
